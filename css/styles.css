@@ -1,0 +1,264 @@
+:root {
+  color-scheme: light dark;
+
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --border: #e3e6eb;
+  --text: #1b1e23;
+  --text-muted: #6b7280;
+  --accent: #2f7a55;
+  --accent-soft: #e7f3ec;
+  --danger: #b33127;
+  --today: #fdf6e3;
+
+  --radius: 10px;
+  --space: 0.75rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16181c;
+    --surface: #1f2228;
+    --border: #32363e;
+    --text: #e8eaed;
+    --text-muted: #9aa1ac;
+    --accent: #4caf80;
+    --accent-soft: #23342b;
+    --danger: #e0685e;
+    --today: #2c2a1f;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: var(--space);
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.4;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.app {
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
+.app__title {
+  font-size: 1.5rem;
+  margin: 0.5rem 0 1rem;
+}
+
+/* --- add habit form --- */
+
+.add-habit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.add-habit__label {
+  flex-basis: 100%;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.add-habit__input {
+  flex: 1 1 12rem;
+  min-width: 0;
+  padding: 0.6rem 0.7rem;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.add-habit__input:focus-visible,
+.add-habit__button:focus-visible,
+.habit__delete:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.add-habit__button {
+  padding: 0.6rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.add-habit__button:hover { filter: brightness(1.08); }
+
+/* --- habit table --- */
+
+.table-scroll {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.habits {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.habits th,
+.habits td {
+  border-bottom: 1px solid var(--border);
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.habits tbody tr:last-child th,
+.habits tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* habit name column: sticky so it stays readable while scrolling days */
+.habits th[scope="row"],
+.habits th.habits__corner {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: 8.5rem;
+  text-align: left;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  font-weight: 600;
+}
+
+.habits thead th {
+  background: var(--surface);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.habits__day-name { display: block; }
+
+.habits__day-num {
+  display: block;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.habits__day--today { background: var(--today); }
+.habits td.habits__day--today { background: var(--today); }
+
+.habits td.is-done { background: var(--accent-soft); }
+
+.habits__empty {
+  padding: 1.5rem 0.75rem;
+  color: var(--text-muted);
+}
+
+/* --- checkbox --- */
+
+.check {
+  width: 100%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.check__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.check__mark {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.check__mark::after {
+  content: "\2713";
+  font-size: 0.9rem;
+  line-height: 1;
+  color: #fff;
+  opacity: 0;
+}
+
+.check__input:checked + .check__mark {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.check__input:checked + .check__mark::after { opacity: 1; }
+
+.check__input:focus-visible + .check__mark {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* --- delete --- */
+
+.habits__actions { width: 3rem; }
+
+.habit__delete {
+  padding: 0.25rem 0.5rem;
+  font: inherit;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.habit__delete:hover { color: var(--danger); }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* --- daily summary row --- */
+
+.habits tfoot th,
+.habits tfoot td {
+  border-top: 2px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.summary__count {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.summary__pct { display: block; }
