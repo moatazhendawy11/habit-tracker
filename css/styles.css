@@ -268,6 +268,15 @@ body {
   outline-offset: 2px;
 }
 
+/* --- weekly count --- */
+
+.habits__week-count-head { white-space: nowrap; }
+
+.habits__week-count {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 /* --- delete --- */
 
 .habits__actions { width: 3rem; }
