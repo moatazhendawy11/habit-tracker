@@ -199,6 +199,12 @@
       headRow.appendChild(th);
     });
 
+    var weekCountHead = document.createElement('th');
+    weekCountHead.scope = 'col';
+    weekCountHead.className = 'habits__week-count-head';
+    weekCountHead.textContent = 'This week';
+    headRow.appendChild(weekCountHead);
+
     var actions = document.createElement('th');
     actions.scope = 'col';
     actions.className = 'habits__actions';
@@ -216,7 +222,7 @@
       var emptyRow = document.createElement('tr');
       var emptyCell = document.createElement('td');
       emptyCell.className = 'habits__empty';
-      emptyCell.colSpan = days.length + 2;
+      emptyCell.colSpan = days.length + 3;
       emptyCell.textContent = 'No habits yet. Add one above to get started.';
       emptyRow.appendChild(emptyCell);
       body.appendChild(emptyRow);
@@ -234,6 +240,8 @@
       days.forEach(function (date) {
         row.appendChild(dayCell(habit, date, todayKey));
       });
+
+      row.appendChild(weekCountCell(habit, days));
 
       var actionCell = document.createElement('td');
       var del = document.createElement('button');
@@ -254,6 +262,21 @@
     return state.habits.reduce(function (total, habit) {
       return total + (state.done[doneKey(habit.id, day)] === true ? 1 : 0);
     }, 0);
+  }
+
+  // Completions within the days currently on screen - the app only ever shows
+  // one rolling window, so "this week" means "the days in that window".
+  function weekCount(habitId, days) {
+    return days.reduce(function (total, date) {
+      return total + (state.done[doneKey(habitId, dateKey(date))] === true ? 1 : 0);
+    }, 0);
+  }
+
+  function weekCountCell(habit, days) {
+    var cell = document.createElement('td');
+    cell.className = 'habits__week-count';
+    cell.textContent = weekCount(habit.id, days) + '/' + days.length;
+    return cell;
   }
 
   function renderFoot(days, todayKey) {
@@ -286,6 +309,7 @@
       footRow.appendChild(cell);
     });
 
+    footRow.appendChild(document.createElement('td')); // lines up with the week-count column
     footRow.appendChild(document.createElement('td')); // lines up with the delete column
   }
 
@@ -329,6 +353,11 @@
     setDone(input.dataset.habitId, input.dataset.date, input.checked);
     // Update just this cell rather than re-rendering, so the box keeps keyboard focus.
     input.closest('td').classList.toggle('is-done', input.checked);
+
+    var row = input.closest('tr');
+    var weekCell = row.querySelector('.habits__week-count');
+    weekCell.textContent = weekCount(input.dataset.habitId, currentDays) + '/' + currentDays.length;
+
     renderFoot(currentDays, dateKey(new Date())); // totals shifted, and the footer holds no focus
   });
 
