@@ -3,6 +3,7 @@
   'use strict';
 
   var STORAGE_KEY = 'habit-tracker:v1';
+  var THEME_KEY = 'habit-tracker:theme';
   var DAY_COUNT = 7;
   var DEFAULT_HABITS = ['Sports', 'Eating well', 'Drinking water', 'Walking', 'Reading'];
 
@@ -11,6 +12,9 @@
   var footRow = document.getElementById('habits-foot');
   var form = document.getElementById('add-habit-form');
   var nameInput = document.getElementById('habit-name');
+  var themeToggle = document.getElementById('theme-toggle');
+  var themeIcon = themeToggle.querySelector('.theme-toggle__icon');
+  var themeLabel = themeToggle.querySelector('.theme-toggle__label');
 
   var state = load();
   var currentDays = []; // the day columns on screen, so the summary can redraw without a full render
@@ -36,6 +40,49 @@
       days.push(d);
     }
     return days;
+  }
+
+  /* ---------- theme ---------- */
+
+  // No saved preference means "follow the system" - data-theme stays unset so
+  // the prefers-color-scheme media query keeps doing the work.
+  function systemPrefersDark() {
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+
+  function loadTheme() {
+    try {
+      var saved = localStorage.getItem(THEME_KEY);
+      if (saved === 'dark' || saved === 'light') return saved;
+    } catch (err) {
+      console.warn('Could not read saved theme.', err);
+    }
+    return null;
+  }
+
+  function saveTheme(theme) {
+    try {
+      if (theme) {
+        localStorage.setItem(THEME_KEY, theme);
+      } else {
+        localStorage.removeItem(THEME_KEY);
+      }
+    } catch (err) {
+      console.warn('Could not save theme.', err);
+    }
+  }
+
+  function applyTheme(theme) {
+    if (theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+
+    var isDark = theme ? theme === 'dark' : systemPrefersDark();
+    themeToggle.setAttribute('aria-pressed', String(isDark));
+    themeIcon.textContent = isDark ? '☀️' : '🌙';
+    themeLabel.textContent = isDark ? 'Light mode' : 'Dark mode';
   }
 
   /* ---------- state ---------- */
@@ -300,5 +347,15 @@
     nameInput.focus();
   });
 
+  var currentTheme = loadTheme();
+
+  themeToggle.addEventListener('click', function () {
+    var isDark = currentTheme ? currentTheme === 'dark' : systemPrefersDark();
+    currentTheme = isDark ? 'light' : 'dark';
+    applyTheme(currentTheme);
+    saveTheme(currentTheme);
+  });
+
+  applyTheme(currentTheme);
   render();
 })();

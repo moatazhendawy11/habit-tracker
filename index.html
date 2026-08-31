@@ -8,7 +8,13 @@
 </head>
 <body>
   <main class="app">
-    <h1 class="app__title">Habit Tracker</h1>
+    <header class="app__header">
+      <h1 class="app__title">Habit Tracker</h1>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false">
+        <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
+        <span class="theme-toggle__label">Dark mode</span>
+      </button>
+    </header>
 
     <form class="add-habit" id="add-habit-form">
       <label class="add-habit__label" for="habit-name">New habit</label>
